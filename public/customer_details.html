@@ -204,7 +204,8 @@
         </div>
 
         <div class="controls">
-            <button class="btn btn-back" onclick="goBackFromDetails()">← Back</button>          <!-- Delete button hidden until a customer is selected -->
+          <a class="btn btn-back" href="home.html">← Back</a>
+          <!-- Delete button hidden until a customer is selected -->
           <button id="btnDelete" class="btn btn-delete hidden">Delete</button>
         </div>
       </div>
@@ -607,20 +608,6 @@ function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"]/g, c=
 
 function getCustomerId(){
   return new URLSearchParams(window.location.search).get('customerId');
-}
-
-function goBackFromDetails() {
-  // Hide details section
-  $id('detailsMode').style.display = 'none';
-
-  // Show list section
-  $id('searchMode').style.display = 'block';
-
-  // Hide delete button again
-  $id('btnDelete').classList.add('hidden');
-
-  // Clear URL so ?customerId does not reload same view
-  history.pushState({}, "", "customer_details.html");
 }
 
 /* -------------------------

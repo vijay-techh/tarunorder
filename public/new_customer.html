@@ -154,53 +154,61 @@
     flex-wrap: wrap;
     margin-top: 20px;
   }
-  /* ---------------- MOBILE RESPONSIVE ADD-ON ---------------- */
-@media (max-width: 768px) {
+/* ----------- FULL MOBILE RESPONSIVENESS ----------- */
+@media (max-width: 900px) {
+  .card {
+    max-width: 100%;
+    padding: 20px;
+  }
+}
 
+@media (max-width: 600px) {
   body {
-    padding: 10px;
+    padding: 12px;
   }
 
   .card {
-    width: 100%;
     padding: 16px;
+    border-radius: 10px;
   }
 
   .top-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
   }
 
   h2 {
-    font-size: 20px;
+    font-size: 22px;
   }
 
-  input, textarea {
+  input,
+  textarea {
     font-size: 15px;
     width: 100%;
+    padding: 10px;
   }
 
-  /* Product grid fit mobile */
   .products {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
+    display: grid !important;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
   }
 
   .product-checkbox {
-    font-size: 14px;
     width: 100%;
-    padding: 10px;
     text-align: center;
+    font-size: 14px;
+    padding: 10px;
   }
 
-  /* Item row full width */
+  /* Product item row stacking */
   .item-row {
     flex-direction: column;
     align-items: stretch;
-    width: 100%;
     gap: 8px;
+    width: 100%;
   }
 
   .item-row input {
@@ -209,15 +217,22 @@
 
   .item-row button {
     width: 100%;
+    margin-top: 4px;
   }
 
-  /* Button full width and stack */
+  /* Buttons full width on mobile */
+  .action-row,
   button {
     width: 100%;
-    font-size: 16px;
-    padding: 12px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 13px;
   }
 }
+
+
 
 </style>
 

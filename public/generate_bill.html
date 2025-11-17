@@ -293,6 +293,9 @@
       <button id="btnPreview">Generate Bill (Preview)</button>
       <button id="btnDownload">Download Bill</button>
       <button class="secondary" id="btnReset">Reset</button>
+      <button id="mobileDownloadNow" class="secondary" style="display:none;">
+    📥 Download Now
+  </button>
     </div>
 
     <div id="billPreview"></div>
@@ -537,38 +540,74 @@ const address = val("address");
     }
   }
 
-  // ---------- DOWNLOAD (call backend) ----------
-  document.getElementById('btnDownload').addEventListener('click', async ()=>{
-    if (!savedPayload) {
-      // try to auto-generate payload from UI
-      try {
-        generatePreview(); // will set savedPayload
-      } catch (e) {
-        alert('Generate preview first or fix the input');
-        return;
-      }
-    }
-    // final check
-    if (!savedPayload) { alert('No bill data to send'); return; }
+// Detect mobile
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
 
-    try {
-      const res = await fetch('/api/generate-bill', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(savedPayload)
-      });
-      const data = await res.json();
-      if (!data.success) {
-        alert(data.error || 'Error generating bill');
-        return;
-      }
-      // open invoice PDF
-      window.open(`/api/invoice/${data.orderId}`, '_blank');
-    } catch (err) {
-      console.error(err);
-      alert('Server error while generating bill');
+// MAIN DOWNLOAD BUTTON CLICK
+document.getElementById('btnDownload').addEventListener('click', async ()=>{
+
+  try {
+    // Always show preview first
+    generatePreview();
+
+    // Wait for preview to render
+    await new Promise(res => setTimeout(res, 300));
+
+    // If mobile → don't download automatically
+    if (isMobile()) {
+      document.getElementById('mobileDownloadNow').style.display = "inline-block";
+      alert("📄 Preview Ready — Scroll down & click '📥 Download Now' to save bill.");
+      return;
     }
+
+    // Desktop → continue to download
+    startDownloadProcess();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error preparing preview");
+  }
+
+});
+
+// SEPARATE MOBILE DOWNLOAD BUTTON
+document.getElementById('mobileDownloadNow').addEventListener('click', async ()=> {
+  startDownloadProcess(true);
+});
+
+// MAIN DOWNLOAD FUNCTION
+async function startDownloadProcess(isMobileDownload = false) {
+  if (!savedPayload) {
+    alert("Please generate preview first.");
+    return;
+  }
+
+  const res = await fetch('/api/generate-bill', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(savedPayload)
   });
+
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.error || "Error generating bill");
+    return;
+  }
+
+  const fileUrl = `/api/invoice/${data.orderId}`;
+
+  if (isMobileDownload) {
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.download = "invoice.pdf";
+    a.click();
+    alert("📥 Download started — check your downloads folder");
+  } else {
+    window.open(fileUrl, "_blank");
+  }
+}
 
   // ---------- RESET ----------
   document.getElementById('btnReset').addEventListener('click', ()=>{

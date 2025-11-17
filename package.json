@@ -1,0 +1,17 @@
+{
+  "name": "subramani-enterprises",
+  "version": "1.0.0",
+  "description": "Billing & Customer Management App",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.10",
+    "dotenv": "^17.2.3",
+    "express": "^4.19.2",  
+    "pdfkit": "^0.13.0",
+    "pg": "^8.11.3",
+    "uuid": "^9.0.1"
+  }
+}

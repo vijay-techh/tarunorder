@@ -1,0 +1,607 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Generate Bill</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+  :root {
+    --peacock: #016A70;
+    --peacock-dark: #014d50;
+    --accent: #02A2A8;
+    --light-bg: #F5FEFF;
+    --text: #023c3f;
+    --card-bg: #ffffff;
+    --border: #d9efef;
+  }
+
+  body {
+    font-family: Inter, Arial, sans-serif;
+    background: var(--light-bg);
+    padding: 25px;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    padding: 26px;
+    border-radius: 14px;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(1,106,112,0.15);
+  }
+
+  h2 {
+    margin: 0 0 6px;
+    color: var(--peacock-dark);
+    font-size: 26px;
+  }
+
+  .muted {
+    font-size: 14px;
+    color: #577c7e;
+  }
+
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .back {
+    background: var(--peacock);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+    font-weight: 600;
+  }
+
+  .back:hover {
+    background: var(--peacock-dark);
+  }
+
+  label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+    color: var(--peacock-dark);
+  }
+
+  input, textarea, select {
+    padding: 12px;
+    width: 100%;
+    margin-top: 6px;
+    border: 1px solid #cfdede;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    background: #ffffff;
+    color: var(--text);
+    transition: 0.2s;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border: 1px solid var(--peacock);
+    outline: none;
+    box-shadow: 0 0 4px rgba(1,106,112,0.25);
+  }
+
+  /* SEARCH fixes & spacing */
+  .search-wrapper {
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+
+  #searchName {
+    margin-bottom: 6px; /* small gap before search results */
+  }
+
+  #searchResults {
+    border: 1px solid #c3e2e2;
+    border-radius: 8px;
+    padding: 6px;
+    background: white;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 8px;            /* <- ensures spacing under input */
+    display: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  }
+
+  /* each result row */
+  .sr-item {
+    padding: 10px;
+    border-bottom: 1px solid #eef4f4;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.12s;
+  }
+  .sr-item:last-child { border-bottom: none; }
+  .sr-item:hover { background: #EAFDFC; }
+
+  .products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .product-checkbox {
+    padding: 10px 14px;
+    border: 1px solid #c0dadb;
+    background: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.25s;
+    color: var(--peacock-dark);
+  }
+
+  .product-checkbox:hover {
+    background: var(--light-bg);
+    border-color: var(--peacock);
+  }
+
+  .inline-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .inline-row > * {
+    flex: 1;
+  }
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    background: #f7ffff;
+    border: 1px solid #cfeeee;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .item-row input {
+    width: 130px;
+  }
+
+  .actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    padding: 12px 20px;
+    background: var(--peacock);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  button:hover {
+    background: var(--peacock-dark);
+  }
+
+  .secondary {
+    background: #6e7c7e;
+  }
+
+  .secondary:hover {
+    background: #515d5e;
+  }
+
+  #billPreview {
+    margin-top: 25px;
+    background: #F4FEFE;
+    border: 1px solid #cceeee;
+    border-radius: 12px;
+    padding: 20px;
+    display: none;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+  }
+
+  th {
+    background: #e1f6f4;
+    color: var(--peacock-dark);
+    font-weight: 600;
+  }
+
+  th, td {
+    border: 1px solid #d4ebea;
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  @media (max-width: 720px) {
+    .item-row { flex-direction: column; }
+    .top-row { flex-direction: column; align-items: flex-start; gap:12px; }
+    .back { margin-left:0; }
+  }
+  </style>
+
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-row">
+      <div><h2>Generate Bill</h2><div class="muted">Fetch existing customer or enter details manually</div></div>
+      <div><a class="back" href="home.html">← Back</a></div>
+    </div>
+
+    <!-- Search (fixed spacing + proper input) -->
+    <div class="search-wrapper">
+      <label>Search Customer by name</label>
+      <input id="searchName" type="text" placeholder="Type name (even one letter)..." autocomplete="off" />
+      <div id="searchResults"></div>
+    </div>
+
+    <hr/>
+
+    <!-- Customer fields -->
+    <label>Customer Name *</label>
+    <input type="text" id="customerName" 
+       style="text-transform: uppercase;"
+       oninput="this.value = this.value.toUpperCase()" required>
+
+
+    <label>Phone *</label>
+    <input type="text" id="phone" maxlength="10"
+       oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);" required>
+
+    <label>Additional Phone</label>
+    <input type="text" id="altPhone" maxlength="10"
+       oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);">
+
+    <label>Address *</label>
+    <textarea id="address"
+          style="text-transform: uppercase;"
+          oninput="this.value = this.value.toUpperCase()" required></textarea>
+
+    <label style="margin-top:14px">Products (select multiple)</label>
+    <div id="productsList" class="products"></div>
+
+    <div id="itemsContainer"></div>
+
+    <div class="inline-row">
+      <div>
+        <label>Rent Start</label>
+        <input type="date" id="rent_start" />
+      </div>
+      <div>
+        <label>Rent End</label>
+        <input type="date" id="rent_end" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnPreview">Generate Bill (Preview)</button>
+      <button id="btnDownload">Download Bill</button>
+      <button class="secondary" id="btnReset">Reset</button>
+    </div>
+
+    <div id="billPreview"></div>
+  </div>
+
+<script>
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+}
+
+  // ---------- CONFIG ----------
+  const PRODUCTS = ["xframe","alige","piller box","wheels","painting ladder","motor","supportings","machine"];
+  const productsList = document.getElementById('productsList');
+  const itemsContainer = document.getElementById('itemsContainer');
+  const searchInput = document.getElementById('searchName');
+  const searchResults = document.getElementById('searchResults');
+  const previewBox = document.getElementById('billPreview');
+  let savedPayload = null; // used by download button
+
+  // populate product checkboxes
+  PRODUCTS.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'product-checkbox';
+    div.innerHTML = `<label style="margin:0;cursor:pointer"><input type="checkbox" id="chk_${p}" /> ${p}</label>`;
+    productsList.appendChild(div);
+    // click toggles checkbox and row
+    div.addEventListener('click', (e)=>{
+      if (e.target.tagName === 'INPUT') return; // checkbox handled
+      const chk = document.getElementById(`chk_${p}`);
+      chk.checked = !chk.checked;
+      toggleProductRow(p, chk.checked);
+    });
+    // listen change on checkbox
+    div.querySelector('input').addEventListener('change', (ev)=>{
+      toggleProductRow(p, ev.target.checked);
+    });
+  });
+
+  function toggleProductRow(prod, isChecked){
+    if (isChecked) {
+      if (document.getElementById(`row_${prod}`)) return;
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.id = `row_${prod}`;
+      row.innerHTML = `
+        <div style="flex:1"><strong>${prod}</strong></div>
+        <input placeholder="Price" id="price_${prod}" type="number" min="0" step="0.01" />
+        <input placeholder="Quantity" id="qty_${prod}" type="number" min="1" value="1" />
+        <div><button type="button" onclick="removeProduct('${prod}')">Remove</button></div>
+      `;
+      itemsContainer.appendChild(row);
+    } else {
+      const r = document.getElementById(`row_${prod}`);
+      if (r) r.remove();
+      const chk = document.getElementById(`chk_${prod}`);
+      if (chk) chk.checked = false;
+    }
+  }
+
+  function removeProduct(prod){
+    const chk = document.getElementById(`chk_${prod}`);
+    if (chk) chk.checked = false;
+    const r = document.getElementById(`row_${prod}`);
+    if (r) r.remove();
+  }
+
+  // ---------- LIVE SEARCH ----------
+  let searchTimer = null;
+  searchInput.addEventListener('keyup', () => {
+    clearTimeout(searchTimer);
+    const q = searchInput.value.trim();
+    if (!q) {
+      searchResults.style.display = 'none';
+      searchResults.innerHTML = '';
+      return;
+    }
+    // small debounce
+    searchTimer = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/customers?q=' + encodeURIComponent(q));
+        const data = await res.json();
+        if (!data || !data.rows) {
+          searchResults.style.display = 'none';
+          return;
+        }
+        if (data.rows.length === 0) {
+          searchResults.style.display = 'block';
+          searchResults.innerHTML = '<div class="muted">No results</div>';
+          return;
+        }
+        // render each row as .sr-item for spacing/hover
+        searchResults.style.display = 'block';
+        searchResults.innerHTML = data.rows.map(r => `<div class="sr-item" data-id="${r.id}">${escapeHtml(r.name)} — ${escapeHtml(r.phone)}</div>`).join('');
+        // attach listeners
+        searchResults.querySelectorAll('.sr-item').forEach(el=>{
+          el.addEventListener('click', ()=> selectCustomer(el.getAttribute('data-id')));
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }, 180);
+  });
+
+  // escape helper
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+  // ---------- SELECT CUSTOMER ----------
+  async function selectCustomer(id){
+    try {
+      const res = await fetch('/api/customer-details?id=' + encodeURIComponent(id));
+      const data = await res.json();
+      if (!data.success) { alert('Could not load customer'); return; }
+      const c = data.customer;
+      document.getElementById('customerName').value = c.name || '';
+      document.getElementById('phone').value = c.phone || '';
+      document.getElementById('altPhone').value = c.alt_phone || '';
+      document.getElementById('address').value = c.address || '';
+
+      searchResults.style.display = 'none';
+      // load most recent order items automatically if present
+      if (data.orderDetails && data.orderDetails.length) {
+        const last = data.orderDetails[0];
+        // reset product rows
+        PRODUCTS.forEach(p => {
+          const chk = document.getElementById(`chk_${p}`);
+          if (chk) chk.checked = false;
+          const row = document.getElementById(`row_${p}`);
+          if (row) row.remove();
+        });
+        // set rent dates if present
+        if (last.order) {
+          if (last.order.rent_start) document.getElementById('rent_start').value = last.order.rent_start.split('T')[0];
+          if (last.order.rent_end) document.getElementById('rent_end').value = last.order.rent_end.split('T')[0];
+        }
+        // fill items
+        (last.items || []).forEach(it => {
+          const prod = it.product;
+          const chk = document.getElementById(`chk_${prod}`);
+          if (chk) chk.checked = true;
+          toggleProductRow(prod, true);
+          const priceEl = document.getElementById(`price_${prod}`);
+          const qtyEl = document.getElementById(`qty_${prod}`);
+          if (priceEl) priceEl.value = Number(it.price);
+          if (qtyEl) qtyEl.value = Number(it.quantity);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error loading customer');
+    }
+  }
+
+  // ---------- PREVIEW ----------
+  document.getElementById('btnPreview').addEventListener('click', generatePreview);
+
+  function collectItemsFromUI(){
+    const items = [];
+    for (const p of PRODUCTS){
+      const chk = document.getElementById(`chk_${p}`);
+      if (chk && chk.checked){
+        const price = parseFloat(document.getElementById(`price_${p}`).value || 0);
+        const qty = parseInt(document.getElementById(`qty_${p}`).value || 0, 10);
+        if (!isFinite(price) || price <= 0 || !Number.isInteger(qty) || qty <= 0) {
+          throw new Error(`Enter valid price & qty for ${p}`);
+        }
+        items.push({ product: p, price, quantity: qty });
+      }
+    }
+    if (items.length === 0) throw new Error('Select at least one product');
+    return items;
+  }
+
+  function computeDays(start, end){
+    if (!start || !end) return 1;
+    const s = new Date(start);
+    const e = new Date(end);
+    if (isNaN(s) || isNaN(e)) return 1;
+    const diff = Math.floor((e - s) / (1000*60*60*24)) + 1;
+    return Math.max(1, diff);
+  }
+
+  function generatePreview(){
+    try {
+     const name = val("customerName");
+const phone = val("phone");
+const alt = val("altPhone");
+const address = val("address");
+
+
+      if (!name || !phone || !address) { alert('Fill customer name, phone and address'); return; }
+
+      const rent_start = document.getElementById('rent_start').value || null;
+      const rent_end = document.getElementById('rent_end').value || null;
+      const days = computeDays(rent_start, rent_end);
+
+      const items = collectItemsFromUI();
+
+      // compute totals
+      let grand = 0;
+      const rows = items.map(it=>{
+        const amt = Number(it.price) * Number(it.quantity) * days;
+        grand += amt;
+        return { ...it, amount: amt };
+      });
+
+      // store payload for download (server expects items with price & quantity)
+      savedPayload = {
+        name, phone, alt_phone: alt, address, rent_start, rent_end,
+        items: items.map(it => ({ product: it.product, price: it.price, quantity: it.quantity }))
+      };
+
+      // render preview
+      let html = `<div style="display:flex;justify-content:space-between;align-items:center">
+                    <div><h3 style="margin:0;text-decoration:underline;">SUBRAMANI ENTERPRISES</h3>
+                    <div class="muted">Phone: 9916067960, 8073024022</div></div>
+                    <div style="text-align:right"><small>${new Date().toLocaleDateString()}</small></div>
+                  </div>
+                  <hr/>
+                  <div><strong>Name:</strong> ${escapeHtml(name)} &nbsp; <strong>Phone:</strong> ${escapeHtml(phone)}</div>
+                  <div><strong>Address:</strong> ${escapeHtml(address)}</div>
+                  <div style="margin-top:8px">
+                  <strong>Rent:</strong> ${rent_start || 'N/A'} 
+                  ${rent_end ? (' to ' + rent_end) : ''} 
+                  &nbsp; <strong>(${days} day${days>1?'s':''})</strong>
+                  </div>
+                  <table>
+                    <thead><tr><th>Description</th><th>Price</th><th>Qty</th><th>Amount</th></tr></thead><tbody>`;
+
+      rows.forEach(r=> {
+        html += `<tr><td>${escapeHtml(r.product)}</td><td>${Number(r.price).toFixed(2)}</td><td>${r.quantity}</td><td>₹ ${Number(r.amount).toFixed(2)}</td></tr>`;
+      });
+
+      html += `<tr><td colspan="3" style="text-align:right"><strong>Total</strong></td><td><strong>₹ ${Number(grand).toFixed(2)}</strong></td></tr>`;
+      html += `</tbody></table>`;
+
+      previewBox.innerHTML = html;
+      previewBox.style.display = 'block';
+      previewBox.scrollIntoView({behavior:'smooth'});
+    } catch (err) {
+      alert(err.message || 'Error building preview');
+    }
+  }
+
+  // ---------- DOWNLOAD (call backend) ----------
+  document.getElementById('btnDownload').addEventListener('click', async ()=>{
+    if (!savedPayload) {
+      // try to auto-generate payload from UI
+      try {
+        generatePreview(); // will set savedPayload
+      } catch (e) {
+        alert('Generate preview first or fix the input');
+        return;
+      }
+    }
+    // final check
+    if (!savedPayload) { alert('No bill data to send'); return; }
+
+    try {
+      const res = await fetch('/api/generate-bill', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(savedPayload)
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.error || 'Error generating bill');
+        return;
+      }
+      // open invoice PDF
+      window.open(`/api/invoice/${data.orderId}`, '_blank');
+    } catch (err) {
+      console.error(err);
+      alert('Server error while generating bill');
+    }
+  });
+
+  // ---------- RESET ----------
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    document.getElementById('customerName').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('altPhone').value = '';
+    document.getElementById('address').value = '';
+    document.getElementById('rent_start').value='';
+    document.getElementById('rent_end').value='';
+    searchInput.value = '';
+    searchResults.style.display = 'none';
+    previewBox.style.display = 'none';
+    savedPayload = null;
+    // remove rows & uncheck products
+    PRODUCTS.forEach(p=>{
+      const chk = document.getElementById(`chk_${p}`);
+      if (chk) chk.checked = false;
+      const r = document.getElementById(`row_${p}`);
+      if (r) r.remove();
+    });
+  });
+
+  // ---------- helpful: press Enter in search to select first result ----------
+  searchInput.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter') {
+      const first = searchResults.querySelector('.sr-item[data-id]');
+      if (first) selectCustomer(first.getAttribute('data-id'));
+    }
+  });
+
+  // ---------- init ----------
+  (function init(){ /* nothing to do for now */ })();
+
+</script>
+</body>
+</html>

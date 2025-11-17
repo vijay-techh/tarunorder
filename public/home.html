@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #F9F4FB; /* soft plum background */
+  }
+
+  .navbar {
+    background:#7211a3; /* plum */
+    padding: 18px;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 45px auto;
+    padding: 20px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+  }
+
+  .card {
+    background: white;
+    padding: 30px 25px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+    transition: 0.25s;
+    cursor: pointer;
+    border: 1px solid #E9D7F2; /* soft plum border */
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 32px rgba(107,46,111,0.18); /* plum shadow */
+    background: linear-gradient(135deg, #ffffff, #F7EAFE);
+  }
+
+  .card h3 {
+    margin-top: 15px;
+    color: #1bcad6; /* plum heading */
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .card p {
+    color: #555;
+    margin-top: 6px;
+    font-size: 14px;
+  }
+
+  .icon {
+    font-size: 42px;
+    color: #1bcad6; /* plum icon */
+    margin-bottom: 8px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="navbar">SUBRAMANI ENTERPRISES</div>
+
+<div class="container">
+
+  <div class="grid">
+
+    <!-- New Customer -->
+    <a href="new_customer.html">
+      <div class="card">
+        <div class="icon">➕</div>
+        <h3>New Customer</h3>
+        <p>Add customer & create first order</p>
+      </div>
+    </a>
+
+    <!-- Generate Bill -->
+    <a href="generate_bill.html">
+      <div class="card">
+        <div class="icon">🧾</div>
+        <h3>Generate Bill</h3>
+        <p>Create manual bills for existing customers</p>
+      </div>
+    </a>
+
+    <!-- Customer Details -->
+    <a href="customer_details.html">
+      <div class="card">
+        <div class="icon">📁</div>
+        <h3>Customer Details</h3>
+        <p>View all customers & order history</p>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+</body>
+</html>

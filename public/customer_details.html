@@ -56,14 +56,13 @@
     font-weight:600;
   }
 
-  .btn-back { background:var(--peacock); color:#fff; }
+  .btn-back { background:var(--peacock); color:#fff; text-decoration:none; display:inline-block; }
   .btn-delete { background:#d32f2f; color:#fff; }
   .btn-edit { background:var(--accent); color:#fff; }
   .btn-save { background:var(--peacock-dark); color:#fff; }
 
   .subtitle { margin-top:16px; color:#10605e; font-weight:700; font-size:18px; }
 
-  /* Search list */
   #searchMode { margin-top:20px; }
   #searchBox {
     padding:12px;
@@ -89,7 +88,6 @@
   }
   .item:hover { background:#f2fdfc; }
 
-  /* Details */
   #detailsMode { display:none; margin-top:20px; }
   .info { margin:10px 0; font-size:16px; }
   .label { font-weight:700; color:var(--peacock-dark); margin-right:8px; }
@@ -101,45 +99,21 @@
   }
   td { padding:12px; border-bottom:1px solid #eef8f7; vertical-align:middle; }
 
-  ul#productsList { padding-left:20px; margin-top:12px; color:#234; }
-
-  /* Edit area */
   .edit-area { margin-top:16px; padding:14px; border-radius:10px; background:#fbfffe; border:1px solid #e6f7f6; }
   .row { display:flex; gap:8px; align-items:center; margin-top:8px; }
-  .row input, .row select { padding:8px; border-radius:8px; border:1px solid #dbe; }
+  .row input { padding:8px; border-radius:8px; border:1px solid #dbe; }
   .row .prod { flex:1; }
   .row .small { width:120px; }
   .row .qty { width:100px; }
   .row .remove { background:#f44336; color:#fff; border-radius:8px; padding:8px; cursor:pointer; }
 
   .muted { color:#6b8; font-size:13px; }
-
   .hidden { display:none; }
 
-  /* responsive */
   @media (max-width:720px){
     .row { flex-direction:column; align-items:stretch; }
     .controls { flex-wrap:wrap; }
   }
-  .customer-info {
-   font-size: 14px;
-   color: #4b6768;
-   margin-top: 2px;
-}
-
-.status-badge {
-   font-size: 12px;
-   padding: 4px 10px;
-   border-radius: 8px;
-   font-weight: 600;
-   margin-left: 6px;
-   display: inline-block;
-}
-
-.status-active { background: #0aa86e22; color: #0b7d55; }
-.status-returned { background: #d5d5d5; color: #555; }
-.status-overdue { background: #ffb7b7; color: #b30000; }
-.status-none { color: #888; }
 
 .customer-card {
   padding: 12px 16px;
@@ -156,21 +130,10 @@
   box-shadow: 0 6px 14px rgba(0,0,0,0.06);
 }
 
-.customer-card-active {
-  border-left: 6px solid #08b87c;
-}
-
-.customer-card-returned {
-  border-left: 6px solid #889397;
-}
-
-.customer-card-overdue {
-  border-left: 6px solid #ff5959;
-}
-
-.customer-card-none {
-  border-left: 6px solid #bfcaca;
-}
+.customer-card-active { border-left: 6px solid #08b87c; }
+.customer-card-returned { border-left: 6px solid #889397; }
+.customer-card-overdue { border-left: 6px solid #ff5959; }
+.customer-card-none { border-left: 6px solid #bfcaca; }
 
 .customer-info-small {
   font-size: 13px;
@@ -205,19 +168,16 @@
 
         <div class="controls">
           <a class="btn btn-back" href="home.html">← Back</a>
-          <!-- Delete button hidden until a customer is selected -->
           <button id="btnDelete" class="btn btn-delete hidden">Delete</button>
         </div>
       </div>
 
-      <!-- Search + List -->
       <div id="searchMode">
         <h3 class="subtitle">All Customers</h3>
         <input id="searchBox" placeholder="Search name or phone..." onkeyup="searchCustomers()">
         <div id="results"></div>
       </div>
 
-      <!-- Customer Details -->
       <div id="detailsMode">
         <h3 id="custName"></h3>
         <div class="info"><span class="label">Phone:</span><span id="custPhone"></span></div>
@@ -232,11 +192,7 @@
               <option value="OVERDUE">OVERDUE 🔴</option>
             </select>
           </div>
-
-          <!-- Edit last order button -->
-          <div>
-            <button id="btnEditLast" class="btn btn-edit">Edit Last Order</button>
-          </div>
+          <button id="btnEditLast" class="btn btn-edit">Edit Last Order</button>
         </div>
 
         <div id="editArea" class="edit-area hidden">
@@ -255,9 +211,7 @@
             </div>
           </div>
 
-          <div id="itemsEditor" style="margin-top:14px;">
-            <!-- rows appended here -->
-          </div>
+          <div id="itemsEditor" style="margin-top:14px;"></div>
 
           <div style="margin-top:12px; display:flex; gap:8px;">
             <button id="btnAddRow" class="btn">+ Add Item</button>
@@ -281,16 +235,14 @@
   </div>
 
 <script>
-/* helper */
 function $id(id){ return document.getElementById(id); }
 function safeNumber(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
+
 let currentCustomerId = null;
-let currentLastOrder = null; // object { order: {...}, items: [...] }
+let currentLastOrder = null;
 let customersCache = [];
 
-/* -------------------------
-   Load single customer details
-   ------------------------- */
+/* Load details */
 async function loadCustomerDetails(id){
   currentCustomerId = id;
   try {
@@ -298,10 +250,7 @@ async function loadCustomerDetails(id){
     const data = await res.json();
     if(!data.success){ alert('Could not load customer'); return; }
 
-    // show delete button now that a customer is selected
     $id('btnDelete').classList.remove('hidden');
-
-    // hide list, show details
     $id('searchMode').style.display = 'none';
     $id('detailsMode').style.display = 'block';
 
@@ -310,10 +259,8 @@ async function loadCustomerDetails(id){
     $id('custPhone').textContent = cust.phone || '';
     $id('custAddress').textContent = (cust.address || '').toUpperCase();
 
-    // rent status
     $id('statusDropdown').value = cust.rent_status || 'ACTIVE';
 
-    // orders -> display all (but editor edits only last)
     const ordersBody = $id('ordersBody');
     ordersBody.innerHTML = '';
     data.orderDetails.forEach(o => {
@@ -322,17 +269,11 @@ async function loadCustomerDetails(id){
       ordersBody.appendChild(tr);
     });
 
-    // last entry = latest created => first element in array (we used ORDER BY id DESC server-side)
-    if(data.orderDetails.length > 0){
-      currentLastOrder = data.orderDetails[0];
-    } else {
-      currentLastOrder = null;
-    }
+    currentLastOrder = data.orderDetails.length > 0 ? data.orderDetails[0] : null;
 
-    // show products list (from last order)
     const prodList = $id('productsList');
     prodList.innerHTML = '';
-    if(currentLastOrder && currentLastOrder.items && currentLastOrder.items.length){
+    if(currentLastOrder && currentLastOrder.items.length){
       currentLastOrder.items.forEach(it => {
         const li = document.createElement('li');
         li.textContent = `${it.product} — ${it.quantity} x ₹${Number(it.price).toFixed(2)}`;
@@ -342,7 +283,6 @@ async function loadCustomerDetails(id){
       prodList.innerHTML = '<li class="muted">No products found for last order</li>';
     }
 
-    // prepare edit area with last order data
     prepareEditArea();
 
   } catch(err){
@@ -351,16 +291,13 @@ async function loadCustomerDetails(id){
   }
 }
 
-/* -------------------------
-   Load all customers list
-   ------------------------- */
+/* Load all customers */
 async function loadAllCustomers(){
   try {
     const res = await fetch('/api/customers?q=');
     const data = await res.json();
     customersCache = data.rows || [];
     renderCustomerList(customersCache);
-    // hide delete button on list view
     $id('btnDelete').classList.add('hidden');
     $id('searchMode').style.display = 'block';
     $id('detailsMode').style.display = 'none';
@@ -369,22 +306,22 @@ async function loadAllCustomers(){
     alert('Error loading customers');
   }
 }
+
 function renderCustomerList(list){
   const box = $id('results');
   box.innerHTML = '';
+
   if(!list.length) {
     box.innerHTML = '<div class="item muted">No customers</div>';
     return;
   }
 
   list.forEach(c => {
-
-    // status class
     let cardClass = "customer-card-none";
     let statusText = "—";
-    if (c.rent_status === "ACTIVE") { cardClass = "customer-card-active"; statusText = "ACTIVE"; }
-    if (c.rent_status === "RETURNED") { cardClass = "customer-card-returned"; statusText = "RETURNED"; }
-    if (c.rent_status === "OVERDUE") { cardClass = "customer-card-overdue"; statusText = "OVERDUE"; }
+    if (c.rent_status === "ACTIVE") cardClass = "customer-card-active", statusText = "ACTIVE";
+    if (c.rent_status === "RETURNED") cardClass = "customer-card-returned", statusText = "RETURNED";
+    if (c.rent_status === "OVERDUE") cardClass = "customer-card-overdue", statusText = "OVERDUE";
 
     const rentDate = c.rent_start ? new Date(c.rent_start).toLocaleDateString("en-IN") : "—";
 
@@ -397,16 +334,12 @@ function renderCustomerList(list){
           <span class="status-chip status-${statusText.toLowerCase()}">${statusText}</span>
       </div>
     `;
-    div.onclick = () => { window.location.href = `customer_details.html?customerId=${c.id}`; };
+    div.onclick = () => { window.location.href = 'customer_details.html?customerId=' + c.id; };
     box.appendChild(div);
   });
 }
 
-
-
-/* -------------------------
-   Search
-   ------------------------- */
+/* Search */
 async function searchCustomers(){
   const q = $id('searchBox').value.trim();
   try {
@@ -416,9 +349,7 @@ async function searchCustomers(){
   } catch(err){ console.error(err); }
 }
 
-/* -------------------------
-   RENT STATUS update
-   ------------------------- */
+/* Update Status */
 async function updateStatus(){
   const status = $id('statusDropdown').value;
   if(!currentCustomerId) return;
@@ -436,9 +367,7 @@ async function updateStatus(){
   }
 }
 
-/* -------------------------
-   EDIT LAST ORDER UI
-   ------------------------- */
+/* Editor */
 const editArea = $id('editArea');
 const itemsEditor = $id('itemsEditor');
 const btnEditLast = $id('btnEditLast');
@@ -447,26 +376,22 @@ const btnSaveOrder = $id('btnSaveOrder');
 const editTotalEl = $id('editTotal');
 
 function prepareEditArea(){
-  // If there's no last order, show empty editor with ability to create rows
   if(!currentLastOrder){
     $id('orderDate').value = new Date().toISOString().split('T')[0];
     $id('rentStart').value = '';
     $id('rentEnd').value = '';
   } else {
-    // order_date might be YYYY-MM-DD or ISO -> try extract date portion
     const od = currentLastOrder.order.order_date ? currentLastOrder.order.order_date.split('T')[0] : '';
     $id('orderDate').value = od;
     $id('rentStart').value = currentLastOrder.order.rent_start ? currentLastOrder.order.rent_start.split('T')[0] : '';
     $id('rentEnd').value = currentLastOrder.order.rent_end ? currentLastOrder.order.rent_end.split('T')[0] : '';
   }
 
-  // clear items editor
   itemsEditor.innerHTML = '';
-  const items = (currentLastOrder && currentLastOrder.items) ? currentLastOrder.items : [];
+  const items = currentLastOrder ? currentLastOrder.items || [] : [];
   if(items.length){
     items.forEach(it => addEditorRow(it.product, it.price, it.quantity));
   } else {
-    // add one empty row
     addEditorRow('', 0, 1);
   }
   recalcEditTotal();
@@ -474,7 +399,6 @@ function prepareEditArea(){
 
 btnEditLast.addEventListener('click', ()=>{
   editArea.classList.toggle('hidden');
-  // ensure editor is prepared
   if(!editArea.classList.contains('hidden')) prepareEditArea();
 });
 
@@ -484,7 +408,6 @@ btnAddRow.addEventListener('click', (e)=>{
   recalcEditTotal();
 });
 
-/* create a single editor row */
 function addEditorRow(product = '', price = 0, qty = 1){
   const row = document.createElement('div');
   row.className = 'row';
@@ -494,21 +417,21 @@ function addEditorRow(product = '', price = 0, qty = 1){
     <input class="qty" type="number" step="1" min="1" value="${Number(qty)}" />
     <button class="remove">Remove</button>
   `;
-  // remove handler
+
   row.querySelector('.remove').addEventListener('click', ()=>{
     row.remove();
     recalcEditTotal();
   });
-  // recalc when values change
+
   row.querySelector('.small').addEventListener('input', recalcEditTotal);
   row.querySelector('.qty').addEventListener('input', recalcEditTotal);
+
   itemsEditor.appendChild(row);
 }
 
-/* sum the amounts */
 function recalcEditTotal(){
   let total = 0;
-  Array.from(itemsEditor.querySelectorAll('.row')).forEach(r=>{
+  document.querySelectorAll('#itemsEditor .row').forEach(r=>{
     const p = safeNumber(r.querySelector('.small').value);
     const q = safeNumber(r.querySelector('.qty').value);
     total += p * q;
@@ -516,32 +439,27 @@ function recalcEditTotal(){
   editTotalEl.textContent = `₹ ${total.toFixed(2)}`;
 }
 
-/* -------------------------
-   Save edited order -> POST /api/update-order
-   ------------------------- */
+/* Save Order */
 btnSaveOrder.addEventListener('click', async ()=>{
   if(!currentLastOrder || !currentLastOrder.order || !currentLastOrder.order.id){
     alert('No order selected to update.');
     return;
   }
-  const orderId = currentLastOrder.order.id;
-  // collect items
+
   const rows = Array.from(itemsEditor.querySelectorAll('.row'));
-  const items = rows.map(r => {
-    return {
-      product: r.querySelector('.prod').value.trim(),
-      price: Number(r.querySelector('.small').value) || 0,
-      quantity: Number(r.querySelector('.qty').value) || 0
-    };
-  }).filter(i => i.product && i.quantity > 0);
+  const items = rows.map(r => ({
+    product: r.querySelector('.prod').value.trim(),
+    price: Number(r.querySelector('.small').value) || 0,
+    quantity: Number(r.querySelector('.qty').value) || 0
+  })).filter(i => i.product && i.quantity > 0);
 
   if(items.length === 0){
-    alert('Add at least one valid product (name, qty>0)');
+    alert('Add at least one valid product');
     return;
   }
 
   const payload = {
-    orderId,
+    orderId: currentLastOrder.order.id,
     order_date: $id('orderDate').value || null,
     rent_start: $id('rentStart').value || null,
     rent_end: $id('rentEnd').value || null,
@@ -551,6 +469,7 @@ btnSaveOrder.addEventListener('click', async ()=>{
   try {
     btnSaveOrder.disabled = true;
     btnSaveOrder.textContent = 'Saving...';
+
     const res = await fetch('/api/update-order', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
@@ -559,9 +478,7 @@ btnSaveOrder.addEventListener('click', async ()=>{
     const d = await res.json();
     if(d.success){
       alert('Order updated successfully');
-      // reload details to reflect saved data
       await loadCustomerDetails(currentCustomerId);
-      // close editor
       editArea.classList.add('hidden');
     } else {
       alert(d.error || 'Failed to update order');
@@ -575,12 +492,11 @@ btnSaveOrder.addEventListener('click', async ()=>{
   }
 });
 
-/* -------------------------
-   Delete customer (visible only in details)
-   ------------------------- */
+/* Delete customer */
 $id('btnDelete').addEventListener('click', async ()=>{
   if(!currentCustomerId) return;
-  if(!confirm('Delete this customer and all their orders? This cannot be undone.')) return;
+  if(!confirm('Delete this customer and all orders?')) return;
+
   try {
     const res = await fetch('/api/delete-customer', {
       method:'DELETE',
@@ -590,7 +506,6 @@ $id('btnDelete').addEventListener('click', async ()=>{
     const d = await res.json();
     if(d.success){
       alert('Customer deleted');
-      // go back to list
       location.href = 'customer_details.html';
     } else {
       alert(d.error || 'Could not delete customer');
@@ -601,27 +516,15 @@ $id('btnDelete').addEventListener('click', async ()=>{
   }
 });
 
-/* -------------------------
-   Utils
-   ------------------------- */
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+/* Helpers */
+function escapeHtml(s){ return s ? String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) : ''; }
+function getCustomerId(){ return new URLSearchParams(window.location.search).get('customerId'); }
 
-function getCustomerId(){
-  return new URLSearchParams(window.location.search).get('customerId');
-}
-
-/* -------------------------
-   On load
-   ------------------------- */
+/* Init */
 (async function init(){
   const id = getCustomerId();
-  if(!id) {
-    await loadAllCustomers();
-  } else {
-    await loadCustomerDetails(id);
-  }
-
-  // recalc when editor inputs change (catch delegated events)
+  if(!id) await loadAllCustomers();
+  else await loadCustomerDetails(id);
   itemsEditor.addEventListener('input', recalcEditTotal);
 })();
 </script>

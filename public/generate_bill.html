@@ -5,6 +5,7 @@
   <title>Generate Bill</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
+
   :root {
     --peacock: #016A70;
     --peacock-dark: #014d50;
@@ -91,14 +92,9 @@
     box-shadow: 0 0 4px rgba(1,106,112,0.25);
   }
 
-  /* SEARCH fixes & spacing */
   .search-wrapper {
     margin-top: 10px;
     margin-bottom: 6px;
-  }
-
-  #searchName {
-    margin-bottom: 6px; /* small gap before search results */
   }
 
   #searchResults {
@@ -108,12 +104,11 @@
     background: white;
     max-height: 220px;
     overflow-y: auto;
-    margin-top: 8px;            /* <- ensures spacing under input */
+    margin-top: 8px;
     display: none;
     box-shadow: 0 6px 18px rgba(0,0,0,0.05);
   }
 
-  /* each result row */
   .sr-item {
     padding: 10px;
     border-bottom: 1px solid #eef4f4;
@@ -121,7 +116,6 @@
     font-size: 15px;
     transition: background 0.12s;
   }
-  .sr-item:last-child { border-bottom: none; }
   .sr-item:hover { background: #EAFDFC; }
 
   .products {
@@ -151,10 +145,7 @@
     display: flex;
     gap: 12px;
   }
-
-  .inline-row > * {
-    flex: 1;
-  }
+  .inline-row > * { flex: 1; }
 
   .item-row {
     display: flex;
@@ -167,9 +158,7 @@
     border-radius: 10px;
   }
 
-  .item-row input {
-    width: 130px;
-  }
+  .item-row input { width: 130px; }
 
   .actions {
     margin-top: 20px;
@@ -188,18 +177,9 @@
     cursor: pointer;
     transition: 0.25s;
   }
-
-  button:hover {
-    background: var(--peacock-dark);
-  }
-
-  .secondary {
-    background: #6e7c7e;
-  }
-
-  .secondary:hover {
-    background: #515d5e;
-  }
+  button:hover { background: var(--peacock-dark); }
+  .secondary { background: #6e7c7e; }
+  .secondary:hover { background: #515d5e; }
 
   #billPreview {
     margin-top: 25px;
@@ -211,67 +191,40 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.06);
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
-  }
-
-  th {
-    background: #e1f6f4;
-    color: var(--peacock-dark);
-    font-weight: 600;
-  }
-
-  th, td {
-    border: 1px solid #d4ebea;
-    padding: 10px;
-    font-size: 15px;
-  }
-
   @media (max-width: 720px) {
     .item-row { flex-direction: column; }
     .top-row { flex-direction: column; align-items: flex-start; gap:12px; }
-    .back { margin-left:0; }
   }
-  </style>
 
+  </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top-row">
       <div><h2>Generate Bill</h2><div class="muted">Fetch existing customer or enter details manually</div></div>
-      <div><a class="back" href="home.html">← Back</a></div>
+      <a class="back" href="home.html">← Back</a>
     </div>
 
-    <!-- Search (fixed spacing + proper input) -->
     <div class="search-wrapper">
       <label>Search Customer by name</label>
-      <input id="searchName" type="text" placeholder="Type name (even one letter)..." autocomplete="off" />
+      <input id="searchName" autocomplete="off" placeholder="Type name.." />
       <div id="searchResults"></div>
     </div>
 
     <hr/>
 
-    <!-- Customer fields -->
     <label>Customer Name *</label>
-    <input type="text" id="customerName" 
-       style="text-transform: uppercase;"
-       oninput="this.value = this.value.toUpperCase()" required>
-
+    <input id="customerName" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
 
     <label>Phone *</label>
-    <input type="text" id="phone" maxlength="10"
-       oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);" required>
+    <input id="phone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);">
 
     <label>Additional Phone</label>
-    <input type="text" id="altPhone" maxlength="10"
-       oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);">
+    <input id="altPhone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10);">
 
     <label>Address *</label>
-    <textarea id="address"
-          style="text-transform: uppercase;"
-          oninput="this.value = this.value.toUpperCase()" required></textarea>
+    <textarea id="address" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></textarea>
 
     <label style="margin-top:14px">Products (select multiple)</label>
     <div id="productsList" class="products"></div>
@@ -279,328 +232,236 @@
     <div id="itemsContainer"></div>
 
     <div class="inline-row">
-      <div>
-        <label>Rent Start</label>
-        <input type="date" id="rent_start" />
-      </div>
-      <div>
-        <label>Rent End</label>
-        <input type="date" id="rent_end" />
-      </div>
+      <div><label>Rent Start</label><input type="date" id="rent_start"></div>
+      <div><label>Rent End</label><input type="date" id="rent_end"></div>
     </div>
 
     <div class="actions">
       <button id="btnPreview">Generate Bill (Preview)</button>
       <button id="btnDownload">Download Bill</button>
-      <button class="secondary" id="btnReset">Reset</button>
+      <button id="btnReset" class="secondary">Reset</button>
     </div>
 
     <div id="billPreview"></div>
   </div>
 
+
 <script>
-  function val(id) {
-    const el = document.getElementById(id);
-    return el ? el.value : "";
+// short value helper
+function val(id){ return document.getElementById(id).value.trim(); }
+
+// ---------- CONFIG ----------
+const PRODUCTS=["xframe","alige","piller box","wheels","painting ladder","motor","supportings","machine"];
+const itemsContainer=document.getElementById("itemsContainer");
+let savedPayload=null;
+
+// Generate product checkboxes
+const prodList=document.getElementById('productsList');
+PRODUCTS.forEach(p=>{
+  const box=document.createElement('div');
+  box.className='product-checkbox';
+  box.innerHTML=`<label><input type="checkbox" id="chk_${p}"> ${p}</label>`;
+  prodList.appendChild(box);
+
+  box.onclick=e=>{
+    if(e.target.tagName==="INPUT")return;
+    let chk=document.getElementById(`chk_${p}`);
+    chk.checked=!chk.checked;
+    toggleProductRow(p,chk.checked);
+  };
+
+  box.querySelector('input').addEventListener('change',e=>{
+    toggleProductRow(p,e.target.checked);
+  });
+});
+
+// Add/remove product rows
+function toggleProductRow(prod,isChecked){
+  if(isChecked){
+    if(document.getElementById(`row_${prod}`))return;
+    const row=document.createElement('div');
+    row.className='item-row';
+    row.id=`row_${prod}`;
+    row.innerHTML=`
+      <div style="flex:1"><strong>${prod}</strong></div>
+      <input id="price_${prod}" type="number" min="0" step="0.01" placeholder="Price" />
+      <input id="qty_${prod}" type="number" min="1" value="1" />
+      <button type="button" onclick="removeProduct('${prod}')">Remove</button>`;
+    itemsContainer.appendChild(row);
+  } else removeProduct(prod);
+}
+function removeProduct(prod){
+  const r=document.getElementById(`row_${prod}`);
+  if(r)r.remove();
+  const chk=document.getElementById(`chk_${prod}`);
+  if(chk)chk.checked=false;
 }
 
-  // ---------- CONFIG ----------
-  const PRODUCTS = ["xframe","alige","piller box","wheels","painting ladder","motor","supportings","machine"];
-  const productsList = document.getElementById('productsList');
-  const itemsContainer = document.getElementById('itemsContainer');
-  const searchInput = document.getElementById('searchName');
-  const searchResults = document.getElementById('searchResults');
-  const previewBox = document.getElementById('billPreview');
-  let savedPayload = null; // used by download button
+// Customer live search
+const searchInput=document.getElementById("searchName");
+const searchResults=document.getElementById("searchResults");
 
-  // populate product checkboxes
-  PRODUCTS.forEach(p=>{
-    const div = document.createElement('div');
-    div.className = 'product-checkbox';
-    div.innerHTML = `<label style="margin:0;cursor:pointer"><input type="checkbox" id="chk_${p}" /> ${p}</label>`;
-    productsList.appendChild(div);
-    // click toggles checkbox and row
-    div.addEventListener('click', (e)=>{
-      if (e.target.tagName === 'INPUT') return; // checkbox handled
-      const chk = document.getElementById(`chk_${p}`);
-      chk.checked = !chk.checked;
-      toggleProductRow(p, chk.checked);
-    });
-    // listen change on checkbox
-    div.querySelector('input').addEventListener('change', (ev)=>{
-      toggleProductRow(p, ev.target.checked);
-    });
-  });
-
-  function toggleProductRow(prod, isChecked){
-    if (isChecked) {
-      if (document.getElementById(`row_${prod}`)) return;
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      row.id = `row_${prod}`;
-      row.innerHTML = `
-        <div style="flex:1"><strong>${prod}</strong></div>
-        <input placeholder="Price" id="price_${prod}" type="number" min="0" step="0.01" />
-        <input placeholder="Quantity" id="qty_${prod}" type="number" min="1" value="1" />
-        <div><button type="button" onclick="removeProduct('${prod}')">Remove</button></div>
-      `;
-      itemsContainer.appendChild(row);
-    } else {
-      const r = document.getElementById(`row_${prod}`);
-      if (r) r.remove();
-      const chk = document.getElementById(`chk_${prod}`);
-      if (chk) chk.checked = false;
-    }
+let searchTimer=null;
+searchInput.addEventListener("keyup",()=>{
+  clearTimeout(searchTimer);
+  const q=searchInput.value.trim();
+  if(!q){
+    searchResults.style.display="none";
+    searchResults.innerHTML="";
+    return;
   }
-
-  function removeProduct(prod){
-    const chk = document.getElementById(`chk_${prod}`);
-    if (chk) chk.checked = false;
-    const r = document.getElementById(`row_${prod}`);
-    if (r) r.remove();
-  }
-
-  // ---------- LIVE SEARCH ----------
-  let searchTimer = null;
-  searchInput.addEventListener('keyup', () => {
-    clearTimeout(searchTimer);
-    const q = searchInput.value.trim();
-    if (!q) {
-      searchResults.style.display = 'none';
-      searchResults.innerHTML = '';
+  searchTimer=setTimeout(async()=>{
+    const res=await fetch("/api/customers?q="+encodeURIComponent(q));
+    const data=await res.json();
+    if(!data.rows.length){
+      searchResults.style.display="block";
+      searchResults.innerHTML="<div class='muted'>No results</div>";
       return;
     }
-    // small debounce
-    searchTimer = setTimeout(async () => {
-      try {
-        const res = await fetch('/api/customers?q=' + encodeURIComponent(q));
-        const data = await res.json();
-        if (!data || !data.rows) {
-          searchResults.style.display = 'none';
-          return;
-        }
-        if (data.rows.length === 0) {
-          searchResults.style.display = 'block';
-          searchResults.innerHTML = '<div class="muted">No results</div>';
-          return;
-        }
-        // render each row as .sr-item for spacing/hover
-        searchResults.style.display = 'block';
-        searchResults.innerHTML = data.rows.map(r => `<div class="sr-item" data-id="${r.id}">${escapeHtml(r.name)} — ${escapeHtml(r.phone)}</div>`).join('');
-        // attach listeners
-        searchResults.querySelectorAll('.sr-item').forEach(el=>{
-          el.addEventListener('click', ()=> selectCustomer(el.getAttribute('data-id')));
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    }, 180);
-  });
-
-  // escape helper
-  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
-
-  // ---------- SELECT CUSTOMER ----------
-  async function selectCustomer(id){
-    try {
-      const res = await fetch('/api/customer-details?id=' + encodeURIComponent(id));
-      const data = await res.json();
-      if (!data.success) { alert('Could not load customer'); return; }
-      const c = data.customer;
-      document.getElementById('customerName').value = c.name || '';
-      document.getElementById('phone').value = c.phone || '';
-      document.getElementById('altPhone').value = c.alt_phone || '';
-      document.getElementById('address').value = c.address || '';
-
-      searchResults.style.display = 'none';
-      // load most recent order items automatically if present
-      if (data.orderDetails && data.orderDetails.length) {
-        const last = data.orderDetails[0];
-        // reset product rows
-        PRODUCTS.forEach(p => {
-          const chk = document.getElementById(`chk_${p}`);
-          if (chk) chk.checked = false;
-          const row = document.getElementById(`row_${p}`);
-          if (row) row.remove();
-        });
-        // set rent dates if present
-        if (last.order) {
-          if (last.order.rent_start) document.getElementById('rent_start').value = last.order.rent_start.split('T')[0];
-          if (last.order.rent_end) document.getElementById('rent_end').value = last.order.rent_end.split('T')[0];
-        }
-        // fill items
-        (last.items || []).forEach(it => {
-          const prod = it.product;
-          const chk = document.getElementById(`chk_${prod}`);
-          if (chk) chk.checked = true;
-          toggleProductRow(prod, true);
-          const priceEl = document.getElementById(`price_${prod}`);
-          const qtyEl = document.getElementById(`qty_${prod}`);
-          if (priceEl) priceEl.value = Number(it.price);
-          if (qtyEl) qtyEl.value = Number(it.quantity);
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error loading customer');
-    }
-  }
-
-  // ---------- PREVIEW ----------
-  document.getElementById('btnPreview').addEventListener('click', generatePreview);
-
-  function collectItemsFromUI(){
-    const items = [];
-    for (const p of PRODUCTS){
-      const chk = document.getElementById(`chk_${p}`);
-      if (chk && chk.checked){
-        const price = parseFloat(document.getElementById(`price_${p}`).value || 0);
-        const qty = parseInt(document.getElementById(`qty_${p}`).value || 0, 10);
-        if (!isFinite(price) || price <= 0 || !Number.isInteger(qty) || qty <= 0) {
-          throw new Error(`Enter valid price & qty for ${p}`);
-        }
-        items.push({ product: p, price, quantity: qty });
-      }
-    }
-    if (items.length === 0) throw new Error('Select at least one product');
-    return items;
-  }
-
-  function computeDays(start, end){
-    if (!start || !end) return 1;
-    const s = new Date(start);
-    const e = new Date(end);
-    if (isNaN(s) || isNaN(e)) return 1;
-    const diff = Math.floor((e - s) / (1000*60*60*24)) + 1;
-    return Math.max(1, diff);
-  }
-
-  function generatePreview(){
-    try {
-     const name = val("customerName");
-const phone = val("phone");
-const alt = val("altPhone");
-const address = val("address");
-
-
-      if (!name || !phone || !address) { alert('Fill customer name, phone and address'); return; }
-
-      const rent_start = document.getElementById('rent_start').value || null;
-      const rent_end = document.getElementById('rent_end').value || null;
-      const days = computeDays(rent_start, rent_end);
-
-      const items = collectItemsFromUI();
-
-      // compute totals
-      let grand = 0;
-      const rows = items.map(it=>{
-        const amt = Number(it.price) * Number(it.quantity) * days;
-        grand += amt;
-        return { ...it, amount: amt };
-      });
-
-      // store payload for download (server expects items with price & quantity)
-      savedPayload = {
-        name, phone, alt_phone: alt, address, rent_start, rent_end,
-        items: items.map(it => ({ product: it.product, price: it.price, quantity: it.quantity }))
-      };
-
-      // render preview
-      let html = `<div style="display:flex;justify-content:space-between;align-items:center">
-                    <div><h3 style="margin:0;text-decoration:underline;">SUBRAMANI ENTERPRISES</h3>
-                    <div class="muted">Phone: 9916067960, 8073024022</div></div>
-                    <div style="text-align:right"><small>${new Date().toLocaleDateString()}</small></div>
-                  </div>
-                  <hr/>
-                  <div><strong>Name:</strong> ${escapeHtml(name)} &nbsp; <strong>Phone:</strong> ${escapeHtml(phone)}</div>
-                  <div><strong>Address:</strong> ${escapeHtml(address)}</div>
-                  <div style="margin-top:8px">
-                  <strong>Rent:</strong> ${rent_start || 'N/A'} 
-                  ${rent_end ? (' to ' + rent_end) : ''} 
-                  &nbsp; <strong>(${days} day${days>1?'s':''})</strong>
-                  </div>
-                  <table>
-                    <thead><tr><th>Description</th><th>Price</th><th>Qty</th><th>Amount</th></tr></thead><tbody>`;
-
-      rows.forEach(r=> {
-        html += `<tr><td>${escapeHtml(r.product)}</td><td>${Number(r.price).toFixed(2)}</td><td>${r.quantity}</td><td>₹ ${Number(r.amount).toFixed(2)}</td></tr>`;
-      });
-
-      html += `<tr><td colspan="3" style="text-align:right"><strong>Total</strong></td><td><strong>₹ ${Number(grand).toFixed(2)}</strong></td></tr>`;
-      html += `</tbody></table>`;
-
-      previewBox.innerHTML = html;
-      previewBox.style.display = 'block';
-      previewBox.scrollIntoView({behavior:'smooth'});
-    } catch (err) {
-      alert(err.message || 'Error building preview');
-    }
-  }
-
-  // ---------- DOWNLOAD (call backend) ----------
-  document.getElementById('btnDownload').addEventListener('click', async ()=>{
-    if (!savedPayload) {
-      // try to auto-generate payload from UI
-      try {
-        generatePreview(); // will set savedPayload
-      } catch (e) {
-        alert('Generate preview first or fix the input');
-        return;
-      }
-    }
-    // final check
-    if (!savedPayload) { alert('No bill data to send'); return; }
-
-    try {
-      const res = await fetch('/api/generate-bill', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(savedPayload)
-      });
-      const data = await res.json();
-      if (!data.success) {
-        alert(data.error || 'Error generating bill');
-        return;
-      }
-      // open invoice PDF
-      window.open(`/api/invoice/${data.orderId}`, '_blank');
-    } catch (err) {
-      console.error(err);
-      alert('Server error while generating bill');
-    }
-  });
-
-  // ---------- RESET ----------
-  document.getElementById('btnReset').addEventListener('click', ()=>{
-    document.getElementById('customerName').value = '';
-    document.getElementById('phone').value = '';
-    document.getElementById('altPhone').value = '';
-    document.getElementById('address').value = '';
-    document.getElementById('rent_start').value='';
-    document.getElementById('rent_end').value='';
-    searchInput.value = '';
-    searchResults.style.display = 'none';
-    previewBox.style.display = 'none';
-    savedPayload = null;
-    // remove rows & uncheck products
-    PRODUCTS.forEach(p=>{
-      const chk = document.getElementById(`chk_${p}`);
-      if (chk) chk.checked = false;
-      const r = document.getElementById(`row_${p}`);
-      if (r) r.remove();
+    searchResults.style.display="block";
+    searchResults.innerHTML=data.rows.map(r=>`
+      <div class="sr-item" data-id="${r.id}">${escapeHtml(r.name)} — ${escapeHtml(r.phone)}</div>
+    `).join("");
+    document.querySelectorAll(".sr-item").forEach(el=>{
+      el.onclick=()=>selectCustomer(el.dataset.id);
     });
+  },180);
+});
+
+function escapeHtml(s){return s?String(s).replace(/[&<>"]/g,(c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))):"";}
+
+async function selectCustomer(id){
+  const res=await fetch("/api/customer-details?id="+id);
+  const data=await res.json();
+  if(!data.success)return alert("Could not load customer");
+  let c=data.customer;
+
+  document.getElementById('customerName').value=c.name||'';
+  document.getElementById('phone').value=c.phone||'';
+  document.getElementById('altPhone').value=c.alt_phone||'';
+  document.getElementById('address').value=c.address||'';
+
+  searchResults.style.display="none";
+
+  // reset product UI
+  PRODUCTS.forEach(p=>{
+    removeProduct(p);
+    let chk=document.getElementById(`chk_${p}`);
+    if(chk)chk.checked=false;
   });
 
-  // ---------- helpful: press Enter in search to select first result ----------
-  searchInput.addEventListener('keydown', (e)=>{
-    if (e.key === 'Enter') {
-      const first = searchResults.querySelector('.sr-item[data-id]');
-      if (first) selectCustomer(first.getAttribute('data-id'));
+  // load last order if exists
+  if(data.orderDetails && data.orderDetails.length){
+    const last=data.orderDetails[0];
+
+    if(last.order.rent_start)
+      document.getElementById("rent_start").value=last.order.rent_start.split("T")[0];
+
+    if(last.order.rent_end)
+      document.getElementById("rent_end").value=last.order.rent_end.split("T")[0];
+
+    (last.items||[]).forEach(it=>{
+      let p=it.product;
+      document.getElementById(`chk_${p}`).checked=true;
+      toggleProductRow(p,true);
+      document.getElementById(`price_${p}`).value=it.price;
+      document.getElementById(`qty_${p}`).value=it.quantity;
+    });
+  }
+}
+
+// Preview
+document.getElementById("btnPreview").onclick=generatePreview;
+
+function computeDays(s,e){
+  if(!s||!e)return 1;
+  const d=(new Date(e)-new Date(s))/(1000*3600*24)+1;
+  return Math.max(1,Math.floor(d));
+}
+
+function collectItems(){
+  const items=[];
+  for(const p of PRODUCTS){
+    let chk=document.getElementById(`chk_${p}`);
+    if(chk && chk.checked){
+      let price=parseFloat(document.getElementById(`price_${p}`).value||0);
+      let qty=parseInt(document.getElementById(`qty_${p}`).value||0);
+      if(price<=0||qty<=0)throw Error(`Invalid price/qty for ${p}`);
+      items.push({product:p,price,quantity:qty});
     }
-  });
+  }
+  if(!items.length)throw Error("Select at least one product");
+  return items;
+}
 
-  // ---------- init ----------
-  (function init(){ /* nothing to do for now */ })();
+function generatePreview(){
+  try{
+    let name=val("customerName"),phone=val("phone"),address=val("address"),alt=val("altPhone");
+    if(!name||!phone||!address) return alert("Enter customer details");
+
+    const s=document.getElementById('rent_start').value||null;
+    const e=document.getElementById('rent_end').value||null;
+    const days=computeDays(s,e);
+    const items=collectItems();
+
+    let total=0;
+    const rows=items.map(it=>{
+      let amt=it.price*it.quantity*days; total+=amt;
+      return {...it,amount:amt};
+    });
+
+    savedPayload={name,phone,alt_phone:alt,address,rent_start:s,rent_end:e,items};
+
+    const prev=document.getElementById("billPreview");
+    prev.innerHTML=`<h3>Invoice Preview</h3><table border="1" cellpadding="6"><tr><th>Product</th><th>Price</th><th>Qty</th><th>Amount</th></tr>`+
+      rows.map(r=>`<tr><td>${r.product}</td><td>${r.price}</td><td>${r.quantity}</td><td>${r.amount}</td></tr>`).join("")+
+      `<tr><td colspan="3"><b>Total</b></td><td><b>${total}</b></td></tr></table>`;
+    prev.style.display="block";
+  }catch(e){alert(e.message);}
+}
+
+// DOWNLOAD (with mobile support)
+function isMobile(){
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
+document.getElementById("btnDownload").onclick=async()=>{
+  if(!savedPayload){
+    try{generatePreview();}catch(e){return alert("Fix inputs first");}
+  }
+  if(!savedPayload)return alert("No bill data");
+
+  const res=await fetch("/api/generate-bill",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(savedPayload)
+  });
+  const data=await res.json();
+  if(!data.success)return alert("Error generating bill");
+
+  const fileUrl="/api/invoice/"+data.orderId;
+
+  if(isMobile()){
+    const link=document.createElement("a");
+    link.href=fileUrl;
+    link.download="invoice.pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    alert("📥 Download started — check Downloads folder");
+  } else {
+    window.open(fileUrl,"_blank");
+  }
+};
+
+// RESET
+document.getElementById("btnReset").onclick=()=>{
+  ["customerName","phone","altPhone","address","rent_start","rent_end","searchName"].forEach(id=>document.getElementById(id).value="");
+  searchResults.style.display="none";
+  document.getElementById("billPreview").style.display="none";
+  savedPayload=null;
+  PRODUCTS.forEach(removeProduct);
+};
 
 </script>
 </body>

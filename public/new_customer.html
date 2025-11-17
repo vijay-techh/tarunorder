@@ -155,21 +155,21 @@
     margin-top: 20px;
   }
   /* ---------------- MOBILE RESPONSIVE ADD-ON ---------------- */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
 
   body {
-    padding: 12px;
+    padding: 10px;
   }
 
   .card {
-    padding: 18px;
-    border-radius: 12px;
+    width: 100%;
+    padding: 16px;
   }
 
   .top-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
   }
 
   h2 {
@@ -177,24 +177,30 @@
   }
 
   input, textarea {
-    font-size: 14px;
-    padding: 10px;
+    font-size: 15px;
+    width: 100%;
   }
 
+  /* Product grid fit mobile */
   .products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
   }
 
   .product-checkbox {
-    font-size: 13px;
-    padding: 8px 10px;
+    font-size: 14px;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
   }
 
+  /* Item row full width */
   .item-row {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
   }
 
   .item-row input {
@@ -203,12 +209,12 @@
 
   .item-row button {
     width: 100%;
-    margin-top: 6px;
   }
 
+  /* Button full width and stack */
   button {
     width: 100%;
-    font-size: 15px;
+    font-size: 16px;
     padding: 12px;
   }
 }

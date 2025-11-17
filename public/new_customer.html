@@ -119,16 +119,73 @@
     color: #222;
   }
 
-  /* Small screens */
-  @media (min-width: 600px) {
-    button {
-      width: auto;
-    }
-    button:nth-of-type(2) {
-      width: auto;
-      margin-left: 10px;
-    }
+  /* ------------------------------
+   EXTRA MOBILE RESPONSIVE CSS
+   ------------------------------ */
+
+@media (max-width: 600px) {
+
+  body {
+    padding: 10px;
   }
+
+  .card {
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  input, textarea {
+    font-size: 14px;
+    padding: 9px;
+  }
+
+  /* Products grid more compact for small screens */
+  .products {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 6px;
+  }
+
+  .product-checkbox {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  /* Items layout stack better on small screen */
+  .item-row {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .item-row input {
+    width: 100%;
+  }
+
+  .item-row button {
+    width: 100%;
+  }
+
+  /* Buttons full width */
+  button {
+    width: 100% !important;
+    font-size: 14px;
+    padding: 11px;
+  }
+
+  a.back-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
+
 
 </style>
 </head>
